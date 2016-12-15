@@ -15,7 +15,7 @@ module PiSlides
     # pushes the file, displays it and removes it from the list immediately
     # shows and pops the next file from the list if path.nil?
     def show(path=nil)
-      exec %{#{"push '#{path}';" if path}next;pop;}
+      exec %{#{"list 'push' '#{path}';" if path}next; load; redisplay; list 'remove';}
     end
 
     # turn status line on/off
@@ -25,6 +25,8 @@ module PiSlides
       else # switch off
         set_vars :_display_busy => 0, :_display_status => 0
       end
+      sleep 1
+      exec 'redisplay;'
     end
 
     def toggle_autowidth
@@ -32,7 +34,7 @@ module PiSlides
     end
 
     def push(*files)
-      exec files.map{|f| "push '#{f}';"}.join + "prefetch;"
+      exec files.map{|f| "list 'push' '#{f}';"}.join + "prefetch;"
     end
 
     def set_vars(vars = {})
